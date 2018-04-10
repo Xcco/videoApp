@@ -39,7 +39,7 @@ const Navigator = TabNavigator(
             activeTintColor:'#ef6c80',
             showLabel:true,
             labelStyle:{
-                fontSize:10
+                fontSize:10,
             }
         }
     }

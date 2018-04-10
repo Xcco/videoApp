@@ -147,6 +147,7 @@ class List extends Component {
     _renderList = () => {
         return(
             <FlatList
+                keyExtractor={(item) => String(item.id)}
                 data={this.state.data}
                 automaticallyAdjustContentInsets={false}
                 showsVerticalScrollIndicator={false}
@@ -304,7 +305,6 @@ const styles = StyleSheet.create({
     },
     thumbImg:{
         height:180,
-        backgroundColor:'purple',
     },
     videoPlayer:{
         height:180,
