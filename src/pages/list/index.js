@@ -9,6 +9,7 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
+  StatusBar,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 import { DrawerNavigator } from 'react-navigation'
@@ -19,9 +20,6 @@ import CustomVideo from './video'
 
 const width = Dimensions.get('window').width
 
-const data={
-
-}
 class List extends Component {
     static navigationOptions = {
         title: 'List',
@@ -72,17 +70,79 @@ class List extends Component {
         this._fetchData(0)
     }
     _playVideo = (id) => {
-        console.log(id)
         this.setState({
             playlist:{...this.state.playlist,[id]:true}
         })
-        console.log(this.state.playlist)
     }
     _fetchMoreData = () => {
       if(this.state.finished || this.state.isLoading){
           return
       }
       this._fetchData(this.state.page+1)
+    }
+    _handleEnd = (id) => {
+        this.setState({
+            playlist:{...this.state.playlist,[id]:false}
+        })
+    }
+    _getAvatorImage = (num) => {
+        let img 
+        switch(num){
+            case 1:
+            img=require('../../imgs/avators/1.png')
+            break
+            case 2:
+            img=require('../../imgs/avators/2.png')
+            break
+            case 3:
+            img=require('../../imgs/avators/3.png')
+            break
+            case 4:
+            img=require('../../imgs/avators/4.png')
+            break
+            case 5:
+            img=require('../../imgs/avators/5.png')
+            break
+            case 6:
+            img=require('../../imgs/avators/6.png')
+            break
+            default:
+            break
+        }
+        return(<Image
+            source={img}
+            style={styles.avator} 
+        />)
+    }
+    _getVideoImage = (num) => {
+        let img 
+        switch(num){
+            case 1:
+            img=require('../../imgs/videoImgs/1.png')
+            break
+            case 2:
+            img=require('../../imgs/videoImgs/2.png')
+            break
+            case 3:
+            img=require('../../imgs/videoImgs/3.png')
+            break
+            case 4:
+            img=require('../../imgs/videoImgs/4.png')
+            break
+            case 5:
+            img=require('../../imgs/videoImgs/5.png')
+            break
+            case 6:
+            img=require('../../imgs/videoImgs/6.png')
+            break
+            default:
+            break
+        }
+        return(<Image
+            source={img}
+            style={styles.thumbImg}
+            resizeMode='cover'
+        />)
     }
     _renderList = () => {
         return(
@@ -109,36 +169,41 @@ class List extends Component {
                                     progressBackgroundColor="#ffff00"
                                 />}
                 renderItem={({item}) => (
-                    <TouchableHighlight>
+                    <TouchableHighlight key={item.id}>
                         <View style={styles.videoBoard}>
-                            <Text 
-                                style={styles.videoTitle}
-                                onPress={() => {
-                                    console.log(this.props.navigation)
-                                    this.props.navigation.navigate('Account')}}
-                            >{item.name}</Text>
+                            <View style={styles.videoHeader}>
+                                <View style={styles.videoUser}>
+                                {this._getAvatorImage(item.avatorNumber)}
+                                <Text 
+                                    style={styles.videoText}
+                                    onPress={() => {
+                                        this.props.navigation.navigate('Detail')}}
+                                >{item.name}</Text>
+                                </View>
+                                <Text style={styles.date}>{item.date}</Text>
+                            </View>
                             {this.state.playlist[item.id]
                             ?<CustomVideo 
                                 style={styles.videoPlayer}
                                 id={item.id}
+                                handleEnd={this._handleEnd}
+                                themeColor='#ef6c80'
+                                width={width}
                             />
                             :<TouchableHighlight
                                 onPress={()=>this._playVideo(item.id)}>
-                                <Image
-                                    source={{}}
-                                    style={styles.thumbImg}
-                                    
-                                />
+                                {this._getVideoImage(item.avatorNumber)}
                             </TouchableHighlight>}
+                            {!this.state.playlist[item.id] &&
                             <View style={styles.iconPlay}>
                             <Icon
                                 size={28}
                                 name='ios-play'
                                 color='#fff' />
-                            </View>
+                            </View>}
                             <View style={styles.videoFooter}>
                                 <View style={styles.videoFooterWords}>
-                                    <Text>{item.csentence}</Text>
+                                    <Text style={styles.videoText}>{item.csentence}</Text>
                                 </View>
                                 <View style={styles.videoFooterOptions}>    
                                     <View style={styles.videoFooterTab}>
@@ -146,14 +211,14 @@ class List extends Component {
                                             size={16}
                                             name={item.like?'ios-heart':'ios-heart-outline'}
                                             color={item.like?'#ef6c80':'#b4a8a8'} />
-                                        <Text> {item.likeNumber}</Text>   
+                                        <Text style={styles.videoText}>{item.likeNumber}</Text>   
                                     </View>
                                     <View style={styles.videoFooterTab}>
                                         <Icon
                                             size={16}
                                             name={'ios-chatboxes'}
                                             color={'#ccc'} />
-                                        <Text> {item.commentNumber}</Text>
+                                        <Text style={styles.videoText}>{item.commentNumber}</Text>
                                     </View> 
                                 </View>
                             </View>
@@ -167,6 +232,7 @@ class List extends Component {
   render(){
     return (
      <View style={styles.main}>
+        <StatusBar barStyle={'light-content'}/>
         <View style={styles.header}>
             <Text style={styles.headerText}>视频列表</Text>
         </View>
@@ -199,10 +265,31 @@ const styles = StyleSheet.create({
         marginBottom:15,
         backgroundColor:'#fff',
     },
-    videoTitle:{
+    videoHeader:{
         height:60,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between'
+    },
+    avator:{
+        width:40,
+        height:40,
+        borderRadius:20,
+        marginLeft:15,
+    },
+    videoText:{
+        marginLeft:10,
+        color:'#666',
     },
     videoFooter:{
+    },
+    videoUser:{
+        flexDirection:'row',
+        alignItems:'center',
+    },
+    date:{
+        color:'#ccc',
+        marginRight:10,
     },
     videoFooterWords:{
         height:30,
@@ -221,7 +308,7 @@ const styles = StyleSheet.create({
     },
     videoPlayer:{
         height:180,
-        backgroundColor:'pink',
+        // backgroundColor:'pink',
     },
     iconPlay:{
         position:'absolute',
@@ -243,11 +330,7 @@ const styles = StyleSheet.create({
     }
 });
 
-//两个页面抽空应重新配置
-const videoList =DrawerNavigator({
-    List: { screen: List },
-    detail: { screen: Detail },
-  });
-export default videoList
+
+export default List
 
 

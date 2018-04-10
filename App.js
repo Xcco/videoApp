@@ -15,7 +15,7 @@ export default class app extends Component{
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar barStyle={'light-content'}/>
+        
       </View>
     );
   }

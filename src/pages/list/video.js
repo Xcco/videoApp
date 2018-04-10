@@ -6,18 +6,30 @@ import {
     StyleSheet,
 } from 'react-native';
 export default class CustomVideo extends React.Component {
+    constructor(){
+        super()
+        this.state={
+            percent:0
+        }
+    }
     handleLoadStart=()=>{}
     handleLoad=()=>{}
-    handleProgress=()=>{}
-    handleEnd=()=>{}
+    handleProgress=(data)=>{
+        const duration=data.playableDuration
+        const current=data.currentTime
+        const percent=parseFloat((current/duration).toFixed(2))
+        this.setState({
+            percent,
+        })
+    }
     handleError=()=>{}
     render() {
-        const{style}=this.props
+        const{style,handleEnd,id,themeColor,width}=this.props
       return (
-        <View style={this.props.style}>
+          <View>
             <Video 
-                source={{uri:data.videoUrl}}
-                style={styles.video}
+                source={require('../../imgs/videos/demo.mp4')}
+                style={style}
                 volume={5}
                 pause={false}
                 rate={1}
@@ -27,18 +39,21 @@ export default class CustomVideo extends React.Component {
                 onLoadStart={this.handleLoadStart}
                 onLoad={this.handleLoad}
                 onProgress={this.handleProgress}
-                onEnd={this.handleEnd}
+                onEnd={()=>handleEnd(id)}
                 onError={this.handleError}
             /> 
+            <View style={{borderTopWidth:3,borderColor:themeColor,width:this.state.percent*width}}></View>
         </View>
       )
     }
 }
-const style=StyleSheet.create({
+const styles=StyleSheet.create({
     container:{
       flex:1,
       height:180,
     },
     video:{
+        width:200,
+        height:180,
     },
 })
